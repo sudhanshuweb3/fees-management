@@ -1,6 +1,7 @@
 package com.fees.management.service;
 
 import com.fees.management.dto.FeeSummaryResponse;
+import com.fees.management.dto.StudentResponseDto;
 import com.fees.management.entity.Student;
 
 import java.util.List;
@@ -16,4 +17,8 @@ public interface StudentService {
     void deleteStudent(Long id);
 
     FeeSummaryResponse getFeeSummary(Long studentId);
+    List<StudentResponseDto> getAllStudentDtos();
+
+    StudentResponseDto getStudentDtoById(Long id);
+
 }

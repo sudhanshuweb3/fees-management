@@ -1,5 +1,6 @@
 package com.fees.management.controller;
 
+import com.fees.management.dto.CourseResponseDto;
 import com.fees.management.entity.Course;
 import com.fees.management.service.CourseService;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +17,15 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    // POST /courses
+    // POST - still accepts entity
     @PostMapping
     public Course createCourse(@RequestBody Course course) {
         return courseService.saveCourse(course);
     }
 
-    // GET /courses
+    // GET - MUST return DTO
     @GetMapping
-    public List<Course> getAllCourses() {
-        return courseService.getAllCourses();
+    public List<CourseResponseDto> getAllCourses() {
+        return courseService.getAllCourseDtos();
     }
 }

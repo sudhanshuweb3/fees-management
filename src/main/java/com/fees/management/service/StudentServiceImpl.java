@@ -1,6 +1,7 @@
 package com.fees.management.service;
 
 import com.fees.management.dto.FeeSummaryResponse;
+import com.fees.management.dto.StudentResponseDto;
 import com.fees.management.entity.*;
 import com.fees.management.repository.StudentRepository;
 import org.springframework.stereotype.Service;
@@ -64,5 +65,39 @@ public class StudentServiceImpl implements StudentService {
 
         return response;
     }
+    @Override
+    public List<StudentResponseDto> getAllStudentDtos() {
+        return studentRepository.findAll()
+                .stream()
+                .map(student -> {
+                    StudentResponseDto dto = new StudentResponseDto();
+                    dto.setId(student.getId());
+                    dto.setName(student.getName());
+                    dto.setEmail(student.getEmail());
+                    dto.setPhone(student.getPhone());
+                    dto.setCourseName(
+                            student.getCourse() != null ? student.getCourse().getName() : null
+                    );
+                    return dto;
+                })
+                .toList();
+    }
+
+    @Override
+    public StudentResponseDto getStudentDtoById(Long id) {
+        Student student = getStudentById(id);
+
+        StudentResponseDto dto = new StudentResponseDto();
+        dto.setId(student.getId());
+        dto.setName(student.getName());
+        dto.setEmail(student.getEmail());
+        dto.setPhone(student.getPhone());
+        dto.setCourseName(
+                student.getCourse() != null ? student.getCourse().getName() : null
+        );
+
+        return dto;
+    }
+
 
 }

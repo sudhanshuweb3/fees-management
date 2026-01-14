@@ -1,5 +1,6 @@
 package com.fees.management.controller;
 
+import com.fees.management.dto.PaymentResponseDto;
 import com.fees.management.entity.Payment;
 import com.fees.management.service.PaymentService;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,8 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    // POST /payments
     @PostMapping
-    public Payment createPayment(@RequestBody Payment payment) {
+    public PaymentResponseDto createPayment(@RequestBody Payment payment) {
         return paymentService.savePayment(payment);
     }
 }
