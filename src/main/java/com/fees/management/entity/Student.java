@@ -1,7 +1,9 @@
 package com.fees.management.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.*;
+
+import java.util.List;
 
 @Entity
 public class Student {
@@ -13,17 +15,62 @@ public class Student {
     private String name;
     private String email;
     private String phone;
-    private String courseName;
 
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public String getPhone() { return phone; }
-    public String getCourseName() { return courseName; }
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    //@JsonIgnoreProperties("students") // prevents infinite loop
+    private Course course;
 
-    public void setId(Long id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setEmail(String email) { this.email = email; }
-    public void setPhone(String phone) { this.phone = phone; }
-    public void setCourseName(String courseName) { this.courseName = courseName; }
+    @OneToMany(mappedBy = "student")
+    private List<Payment> payments;
+
+    // ===== Getters =====
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    // ===== Setters =====
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
 }

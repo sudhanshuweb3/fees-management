@@ -1,5 +1,6 @@
 package com.fees.management.controller;
 
+import com.fees.management.dto.FeeSummaryResponse;
 import com.fees.management.entity.Student;
 import com.fees.management.service.StudentService;
 import org.springframework.web.bind.annotation.*;
@@ -39,4 +40,10 @@ public class StudentController {
     public void deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
     }
+
+    @GetMapping("/{id}/summary")
+    public FeeSummaryResponse getFeeSummary(@PathVariable Long id) {
+        return studentService.getFeeSummary(id);
+    }
+
 }
