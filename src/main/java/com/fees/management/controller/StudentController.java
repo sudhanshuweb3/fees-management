@@ -44,4 +44,11 @@ public class StudentController {
     public FeeSummaryResponse getFeeSummary(@PathVariable Long id) {
         return studentService.getFeeSummary(id);
     }
+
+    @PutMapping("/{id}")
+    public StudentResponseDto updateStudent(@PathVariable Long id,
+                                            @RequestBody StudentRequestDto request) {
+        return studentService.updateStudent(id, request);
+    }
+
 }

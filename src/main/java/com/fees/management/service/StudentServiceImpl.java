@@ -130,5 +130,25 @@ public class StudentServiceImpl implements StudentService {
         );
     }
 
+    @Override
+    public StudentResponseDto updateStudent(Long id, StudentRequestDto request) {
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        Course course = courseRepository.findById(request.getCourseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+        student.setName(request.getName());
+        student.setEmail(request.getEmail());
+        student.setPhone(request.getPhone());
+        student.setCourse(course);
+
+        Student updated = studentRepository.save(student);
+
+        return StudentMapper.toDto(updated);
+    }
+
+
 
 }

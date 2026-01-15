@@ -17,4 +17,7 @@ public interface StudentService {
     void deleteStudent(Long id);
 
     FeeSummaryResponse getFeeSummary(Long studentId);
+
+    StudentResponseDto updateStudent(Long id, StudentRequestDto request);
+
 }

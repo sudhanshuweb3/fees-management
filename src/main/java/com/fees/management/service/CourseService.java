@@ -12,4 +12,7 @@ public interface CourseService {
     Course getCourseById(Long id);
 
     List<CourseResponseDto> getAllCourseDtos();
+
+    CourseResponseDto updateCourse(Long id, CourseRequestDto dto);
+
 }

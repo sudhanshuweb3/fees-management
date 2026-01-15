@@ -19,15 +19,20 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    // POST - still accepts entity
     @PostMapping
     public CourseResponseDto createCourse(@Valid @RequestBody CourseRequestDto course) {
         return courseService.saveCourse(course);
     }
 
-    // GET - MUST return DTO
     @GetMapping
     public List<CourseResponseDto> getAllCourses() {
         return courseService.getAllCourseDtos();
     }
+
+    @PutMapping("/{id}")
+    public CourseResponseDto updateCourse(@PathVariable Long id,
+                                          @RequestBody CourseRequestDto dto) {
+        return courseService.updateCourse(id, dto);
+    }
+
 }

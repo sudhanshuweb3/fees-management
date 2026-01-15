@@ -20,4 +20,11 @@ public class PaymentController {
     public PaymentResponseDto createPayment(@Valid @RequestBody PaymentRequestDto request) {
         return paymentService.createPayment(request);
     }
+
+    @PutMapping("/{id}")
+    public PaymentResponseDto updatePayment(@PathVariable Long id,
+                                            @RequestBody PaymentRequestDto dto) {
+        return paymentService.updatePayment(id, dto);
+    }
+
 }

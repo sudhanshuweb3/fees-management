@@ -56,4 +56,33 @@ public class PaymentServiceImpl implements PaymentService {
 
         return response;
     }
+    @Override
+    public PaymentResponseDto updatePayment(Long id, PaymentRequestDto dto) {
+
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
+
+        Student student = studentRepository.findById(dto.getStudentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        payment.setAmount(dto.getAmount());
+        payment.setMode(dto.getMode());
+        payment.setPaymentDate(dto.getPaymentDate());
+        payment.setStudent(student);
+
+        Payment updated = paymentRepository.save(payment);
+
+        return mapToDto(updated);
+    }
+    public PaymentResponseDto mapToDto(Payment payment) {
+        PaymentResponseDto dto = new PaymentResponseDto();
+        dto.setId(payment.getId());
+        dto.setAmount(payment.getAmount());
+        dto.setMode(payment.getMode());
+        dto.setPaymentDate(payment.getPaymentDate());
+        dto.setStudentId(payment.getStudent().getId());
+        dto.setStudentName(payment.getStudent().getName());
+        return dto;
+    }
+
 }

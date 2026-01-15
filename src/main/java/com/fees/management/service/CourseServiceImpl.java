@@ -71,5 +71,19 @@ public class CourseServiceImpl implements CourseService {
         return dto;
     }
 
+    @Override
+    public CourseResponseDto updateCourse(Long id, CourseRequestDto dto) {
+
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        course.setName(dto.getName());
+        course.setTotalFee(dto.getTotalFee());
+
+        Course updated = courseRepository.save(course);
+
+        return mapToResponseDto(updated);
+    }
+
 
 }
