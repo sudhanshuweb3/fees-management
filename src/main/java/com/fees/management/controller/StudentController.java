@@ -4,6 +4,7 @@ import com.fees.management.dto.FeeSummaryResponse;
 import com.fees.management.dto.StudentResponseDto;
 import com.fees.management.entity.Student;
 import com.fees.management.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class StudentController {
 
     // Create student (still accepts entity as input)
     @PostMapping
-    public Student createStudent(@RequestBody Student student) {
+    public Student createStudent(@Valid @RequestBody Student student) {
         return studentService.saveStudent(student);
     }
 

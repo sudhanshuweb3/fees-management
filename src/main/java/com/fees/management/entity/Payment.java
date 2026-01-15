@@ -2,6 +2,9 @@ package com.fees.management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
@@ -12,10 +15,14 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Positive(message = "Amount must be greater than 0")
     private Double amount;
 
+    @NotNull(message = "Payment date required")
     private LocalDate paymentDate;
 
+    @NotBlank(message = "Mode required")
     private String mode;
 
     @ManyToOne

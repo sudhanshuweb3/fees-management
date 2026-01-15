@@ -2,6 +2,8 @@ package com.fees.management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
@@ -12,8 +14,12 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+    @Email(message = "Email must be valid")
+    @NotBlank(message = "Email cannot be empty")
     private String email;
+    @NotBlank(message = "Phone cannot be empty")
     private String phone;
 
     @ManyToOne

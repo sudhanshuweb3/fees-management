@@ -3,6 +3,7 @@ package com.fees.management.controller;
 import com.fees.management.dto.CourseResponseDto;
 import com.fees.management.entity.Course;
 import com.fees.management.service.CourseService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class CourseController {
 
     // POST - still accepts entity
     @PostMapping
-    public Course createCourse(@RequestBody Course course) {
+    public Course createCourse(@Valid @RequestBody Course course) {
         return courseService.saveCourse(course);
     }
 

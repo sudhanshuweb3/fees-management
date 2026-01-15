@@ -3,6 +3,7 @@ package com.fees.management.controller;
 import com.fees.management.dto.PaymentResponseDto;
 import com.fees.management.entity.Payment;
 import com.fees.management.service.PaymentService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +17,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    public PaymentResponseDto createPayment(@RequestBody Payment payment) {
+    public PaymentResponseDto createPayment(@Valid @RequestBody Payment payment) {
         return paymentService.savePayment(payment);
     }
 }

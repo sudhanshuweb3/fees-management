@@ -3,6 +3,7 @@ package com.fees.management.service;
 import com.fees.management.dto.FeeSummaryResponse;
 import com.fees.management.dto.StudentResponseDto;
 import com.fees.management.entity.*;
+import com.fees.management.exception.ResourceNotFoundException;
 import com.fees.management.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student getStudentById(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+
     }
 
     @Override
