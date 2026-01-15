@@ -1,24 +1,20 @@
 package com.fees.management.service;
 
 import com.fees.management.dto.FeeSummaryResponse;
+import com.fees.management.dto.StudentRequestDto;
 import com.fees.management.dto.StudentResponseDto;
-import com.fees.management.entity.Student;
 
 import java.util.List;
 
 public interface StudentService {
 
-    Student saveStudent(Student student);
+    StudentResponseDto createStudent(StudentRequestDto request);
 
-    List<Student> getAllStudents();
+    List<StudentResponseDto> getAllStudents();
 
-    Student getStudentById(Long id);
+    StudentResponseDto getStudentById(Long id);
 
     void deleteStudent(Long id);
 
     FeeSummaryResponse getFeeSummary(Long studentId);
-    List<StudentResponseDto> getAllStudentDtos();
-
-    StudentResponseDto getStudentDtoById(Long id);
-
 }

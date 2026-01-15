@@ -1,35 +1,49 @@
 package com.fees.management.service;
 
+import com.fees.management.dto.PaymentRequestDto;
 import com.fees.management.dto.PaymentResponseDto;
 import com.fees.management.entity.Payment;
+import com.fees.management.entity.Student;
+import com.fees.management.exception.ResourceNotFoundException;
 import com.fees.management.repository.PaymentRepository;
+import com.fees.management.repository.StudentRepository;
+import com.fees.management.service.PaymentService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final StudentRepository studentRepository;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository,
+                              StudentRepository studentRepository) {
         this.paymentRepository = paymentRepository;
+        this.studentRepository = studentRepository;
     }
 
     @Override
-    public PaymentResponseDto savePayment(Payment payment) {
+    public PaymentResponseDto createPayment(PaymentRequestDto request) {
+
+        Student student = studentRepository.findById(request.getStudentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id " + request.getStudentId()));
+
+        Payment payment = new Payment();
+        payment.setAmount(request.getAmount());
+        payment.setMode(request.getMode());
+        payment.setPaymentDate(request.getPaymentDate());
+        payment.setStudent(student);
 
         Payment saved = paymentRepository.save(payment);
 
-        PaymentResponseDto dto = new PaymentResponseDto();
-        dto.setId(saved.getId());
-        dto.setAmount(saved.getAmount());
-        dto.setPaymentDate(saved.getPaymentDate());
-        dto.setMode(saved.getMode());
+        PaymentResponseDto response = new PaymentResponseDto();
+        response.setId(saved.getId());
+        response.setAmount(saved.getAmount());
+        response.setMode(saved.getMode());
+        response.setPaymentDate(saved.getPaymentDate());
+        response.setStudentId(student.getId());
+        response.setStudentName(student.getName());
 
-        if (saved.getStudent() != null) {
-            dto.setStudentId(saved.getStudent().getId());
-            dto.setStudentName(saved.getStudent().getName());
-        }
-
-        return dto;
+        return response;
     }
 }

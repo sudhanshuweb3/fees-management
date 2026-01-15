@@ -1,8 +1,8 @@
 package com.fees.management.controller;
 
 import com.fees.management.dto.FeeSummaryResponse;
+import com.fees.management.dto.StudentRequestDto;
 import com.fees.management.dto.StudentResponseDto;
-import com.fees.management.entity.Student;
 import com.fees.management.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -19,22 +19,19 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    // Create student (still accepts entity as input)
     @PostMapping
-    public Student createStudent(@Valid @RequestBody Student student) {
-        return studentService.saveStudent(student);
+    public StudentResponseDto createStudent(@Valid @RequestBody StudentRequestDto request) {
+        return studentService.createStudent(request);
     }
 
-    // Return DTOs instead of entities (FIXES infinite recursion)
     @GetMapping
     public List<StudentResponseDto> getAllStudents() {
-        return studentService.getAllStudentDtos();
+        return studentService.getAllStudents();
     }
 
-    // Optional: if you still want student by id, return DTO
     @GetMapping("/{id}")
     public StudentResponseDto getStudentById(@PathVariable Long id) {
-        return studentService.getStudentDtoById(id);
+        return studentService.getStudentById(id);
     }
 
     @DeleteMapping("/{id}")
@@ -42,7 +39,7 @@ public class StudentController {
         studentService.deleteStudent(id);
     }
 
-    // Business endpoint (already perfect)
+    // Fee summary endpoint
     @GetMapping("/{id}/summary")
     public FeeSummaryResponse getFeeSummary(@PathVariable Long id) {
         return studentService.getFeeSummary(id);
