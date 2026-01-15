@@ -1,12 +1,13 @@
 package com.fees.management.service;
 
+import com.fees.management.dto.CourseRequestDto;
 import com.fees.management.dto.CourseResponseDto;
 import com.fees.management.entity.Course;
 
 import java.util.List;
 
 public interface CourseService {
-    Course saveCourse(Course course);
+    CourseResponseDto saveCourse(CourseRequestDto dto);
     List<Course> getAllCourses();
     Course getCourseById(Long id);
 

@@ -1,20 +1,23 @@
 package com.fees.management.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class StudentRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank
+    @Email(message = "Email must be valid")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank
+    @Size(min = 10, max = 10, message = "Phone must be 10 digits")
     private String phone;
 
-    @NotNull
+    @NotNull(message = "CourseId is required")
     private Long courseId;
 
 

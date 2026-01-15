@@ -7,16 +7,23 @@ import com.fees.management.entity.Course;
 import com.fees.management.entity.Payment;
 import com.fees.management.entity.Student;
 import com.fees.management.exception.ResourceNotFoundException;
+import com.fees.management.mapper.StudentMapper;
 import com.fees.management.repository.CourseRepository;
 import com.fees.management.repository.PaymentRepository;
 import com.fees.management.repository.StudentRepository;
 import com.fees.management.service.StudentService;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 
 @Service
 public class StudentServiceImpl implements StudentService {
+
+    private static final Logger log = LoggerFactory.getLogger(StudentServiceImpl.class);
+
 
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
@@ -33,8 +40,13 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponseDto createStudent(StudentRequestDto request) {
 
+        log.info("Creating student with email: {}", request.getEmail());
+
         Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+                .orElseThrow(() -> {
+                    log.error("Course not found with id: {}", request.getCourseId());
+                    return new ResourceNotFoundException("Course not found");
+                });
 
         Student student = new Student();
         student.setName(request.getName());
@@ -44,37 +56,61 @@ public class StudentServiceImpl implements StudentService {
 
         Student saved = studentRepository.save(student);
 
-        return mapToDto(saved);
+        log.info("Student created successfully with id: {}", saved.getId());
+
+        return StudentMapper.toDto(saved);
     }
+
 
     @Override
     public List<StudentResponseDto> getAllStudents() {
         return studentRepository.findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(StudentMapper::toDto)
                 .toList();
     }
 
     @Override
     public StudentResponseDto getStudentById(Long id) {
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
-        return mapToDto(student);
+        log.info("Fetching student with id: {}", id);
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Student not found with id: {}", id);
+                    return new ResourceNotFoundException("Student not found");
+                });
+
+        return StudentMapper.toDto(student);
     }
+
 
     @Override
     public void deleteStudent(Long id) {
+
+        log.warn("Deleting student with id: {}", id);
+
         if (!studentRepository.existsById(id)) {
+            log.error("Cannot delete. Student not found: {}", id);
             throw new ResourceNotFoundException("Student not found");
         }
+
         studentRepository.deleteById(id);
+
+        log.info("Student deleted successfully: {}", id);
     }
+
 
     @Override
     public FeeSummaryResponse getFeeSummary(Long studentId) {
+
+        log.info("Fetching fee summary for student: {}", studentId);
+
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+                .orElseThrow(() -> {
+                    log.error("Student not found for summary: {}", studentId);
+                    return new ResourceNotFoundException("Student not found");
+                });
 
         double totalFee = student.getCourse().getTotalFee();
 
@@ -82,6 +118,8 @@ public class StudentServiceImpl implements StudentService {
         double paid = payments.stream().mapToDouble(Payment::getAmount).sum();
 
         double remaining = totalFee - paid;
+
+        log.info("Fee summary -> total: {}, paid: {}, pending: {}", totalFee, paid, remaining);
 
         return new FeeSummaryResponse(
                 student.getId(),
@@ -92,14 +130,5 @@ public class StudentServiceImpl implements StudentService {
         );
     }
 
-    // --------- Mapper ----------
-    private StudentResponseDto mapToDto(Student student) {
-        return new StudentResponseDto(
-                student.getId(),
-                student.getName(),
-                student.getEmail(),
-                student.getPhone(),
-                student.getCourse().getName()
-        );
-    }
+
 }

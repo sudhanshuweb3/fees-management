@@ -1,5 +1,6 @@
 package com.fees.management.controller;
 
+import com.fees.management.dto.CourseRequestDto;
 import com.fees.management.dto.CourseResponseDto;
 import com.fees.management.entity.Course;
 import com.fees.management.service.CourseService;
@@ -20,7 +21,7 @@ public class CourseController {
 
     // POST - still accepts entity
     @PostMapping
-    public Course createCourse(@Valid @RequestBody Course course) {
+    public CourseResponseDto createCourse(@Valid @RequestBody CourseRequestDto course) {
         return courseService.saveCourse(course);
     }
 

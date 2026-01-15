@@ -1,5 +1,7 @@
 package com.fees.management.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -7,20 +9,20 @@ import java.time.LocalDate;
 
 public class PaymentRequestDto {
 
-    @NotNull
-    private Long studentId;
+    @Min(value = 1, message = "Amount must be greater than 0")
+    private double amount;
 
-    @NotNull
-    @Positive
-    private Double amount;
+    @NotBlank(message = "Mode is required")
+    private String mode;
 
-    @NotNull
-    private String mode; // CASH, UPI, CARD, etc.
-
-    @NotNull
+    @NotNull(message = "Payment date required")
     private LocalDate paymentDate;
 
-    // getters and setters
+    @NotNull(message = "StudentId required")
+    private Long studentId;
+
+
+
     public Long getStudentId() {
         return studentId;
     }

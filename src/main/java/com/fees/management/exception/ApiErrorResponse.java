@@ -3,26 +3,39 @@ package com.fees.management.exception;
 import java.util.List;
 
 public class ApiErrorResponse {
+
     private int status;
-    private String error;
+    private String message;
     private List<String> errors;
 
-    public ApiErrorResponse(int status, String error) {
+    // 🔹 Existing constructor (DON'T remove)
+    public ApiErrorResponse(int status, String message, List<String> errors) {
         this.status = status;
-        this.error = error;
-    }
-
-    public ApiErrorResponse(int status, List<String> errors) {
-        this.status = status;
+        this.message = message;
         this.errors = errors;
     }
 
+    // 🔹 NEW constructor → for NOT FOUND / GENERIC errors
+    public ApiErrorResponse(int status, String message) {
+        this.status = status;
+        this.message = message;
+        this.errors = List.of(); // empty list
+    }
+
+    // 🔹 NEW constructor → for VALIDATION errors
+    public ApiErrorResponse(int status, List<String> errors) {
+        this.status = status;
+        this.message = "Validation failed";
+        this.errors = errors;
+    }
+
+    // getters
     public int getStatus() {
         return status;
     }
 
-    public String getError() {
-        return error;
+    public String getMessage() {
+        return message;
     }
 
     public List<String> getErrors() {
