@@ -15,7 +15,6 @@ public class PaymentRequestDto {
     @NotBlank(message = "Mode is required")
     private String mode;
 
-    @NotNull(message = "Payment date required")
     private LocalDate paymentDate;
 
     @NotNull(message = "StudentId required")

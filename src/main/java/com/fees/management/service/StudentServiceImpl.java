@@ -88,16 +88,16 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(Long id) {
 
-        log.warn("Deleting student with id: {}", id);
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
 
-        if (!studentRepository.existsById(id)) {
-            log.error("Cannot delete. Student not found: {}", id);
-            throw new ResourceNotFoundException("Student not found");
-        }
+        // delete all payments of this student first
+        paymentRepository.deleteByStudentId(id);
 
-        studentRepository.deleteById(id);
+        // tthen delete student
+        studentRepository.delete(student);
 
-        log.info("Student deleted successfully: {}", id);
+        System.out.println("Student deleted successfully: " + id);
     }
 
 

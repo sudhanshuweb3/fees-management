@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
@@ -39,7 +41,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = new Payment();
         payment.setAmount(request.getAmount());
         payment.setMode(request.getMode());
-        payment.setPaymentDate(request.getPaymentDate());
+        payment.setPaymentDate(LocalDate.now());
         payment.setStudent(student);
 
         Payment saved = paymentRepository.save(payment);

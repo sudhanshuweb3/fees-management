@@ -1,5 +1,6 @@
 package com.fees.management.controller;
 
+import com.fees.management.dto.ApiResponse;
 import com.fees.management.dto.FeeSummaryResponse;
 import com.fees.management.dto.StudentRequestDto;
 import com.fees.management.dto.StudentResponseDto;
@@ -35,8 +36,9 @@ public class StudentController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteStudent(@PathVariable Long id) {
+    public ApiResponse deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
+        return new ApiResponse(200, "Student deleted successfully", id);
     }
 
     // Fee summary endpoint

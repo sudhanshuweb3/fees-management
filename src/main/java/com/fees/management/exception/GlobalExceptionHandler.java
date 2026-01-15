@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +20,8 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiErrorResponse handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiErrorResponse> handleValidation(
+            MethodArgumentNotValidException ex) {
 
         log.warn("Validation failed: {}", ex.getMessage());
 
@@ -29,56 +31,69 @@ public class GlobalExceptionHandler {
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .toList();
 
-        return new ApiErrorResponse(400, errors);
+        ApiErrorResponse response =
+                new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(), errors);
+
+        return ResponseEntity.badRequest().body(response);
     }
 
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ApiErrorResponse handleNotFound(ResourceNotFoundException ex) {
+    public ResponseEntity<ApiErrorResponse> handleNotFound(
+            ResourceNotFoundException ex) {
 
-        log.error("Resource not found: {}", ex.getMessage());
+        log.warn("Resource not found: {}", ex.getMessage());
 
-        return new ApiErrorResponse(404, ex.getMessage());
+        ApiErrorResponse response =
+                new ApiErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 
     @ExceptionHandler(Exception.class)
-    public ApiErrorResponse handleGeneric(Exception ex) {
+    public ResponseEntity<ApiErrorResponse> handleGeneric(Exception ex) {
 
         log.error("Unexpected error occurred", ex);
 
-        return new ApiErrorResponse(500, "Internal server error");
+        ApiErrorResponse response =
+                new ApiErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "Internal server error");
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ApiErrorResponse handleInvalidJson(HttpMessageNotReadableException ex) {
 
-        log.error("Invalid JSON request", ex);
 
-        return new ApiErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Invalid or malformed JSON in request body"
-        );
-    }
     @ExceptionHandler(NoResourceFoundException.class)
-    public ApiErrorResponse handleNoResource(NoResourceFoundException ex) {
+    public ResponseEntity<ApiErrorResponse> handleNoResource(NoResourceFoundException ex) {
 
-        return new ApiErrorResponse(
+        ApiErrorResponse error = new ApiErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 "Endpoint not found",
                 List.of()
         );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ApiErrorResponse handleDataIntegrity(DataIntegrityViolationException ex) {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidJson(HttpMessageNotReadableException ex) {
 
-        return new ApiErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                "Cannot delete student because related payments exist"
+        log.error("Invalid JSON request", ex);
+
+        ApiErrorResponse error = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid or malformed JSON in request body"
         );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+
+
+
 
 
 
