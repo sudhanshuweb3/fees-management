@@ -5,9 +5,10 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.9</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.2.5</version>
 	</parent>
+
+
 	<groupId>com.fees</groupId>
 	<artifactId>fees-management</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -70,6 +71,16 @@
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+
+
+
 
 	</dependencies>
 
