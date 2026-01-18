@@ -26,6 +26,10 @@ public class Course {
     //@JsonIgnoreProperties("course")
     private List<Student> students;
 
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
+
     public Long getId() { return id; }
     public String getName() { return name; }
     public Double getTotalFee() { return totalFee; }
@@ -35,5 +39,8 @@ public class Course {
     public void setName(String name) { this.name = name; }
     public void setTotalFee(Double totalFee) { this.totalFee = totalFee; }
     public void setStudents(List<Student> students) { this.students = students; }
+    
+    public School getSchool() { return school; }
+    public void setSchool(School school) { this.school = school; }
 }
 

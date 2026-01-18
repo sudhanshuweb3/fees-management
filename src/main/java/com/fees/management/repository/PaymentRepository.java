@@ -11,6 +11,9 @@ import java.util.List;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     List<Payment> findByStudentId(Long studentId);
+    List<Payment> findByStudentIdAndSchoolId(Long studentId, Long schoolId);
+    List<Payment> findBySchoolId(Long schoolId);
+    
     @Transactional
     @Modifying
     @Query("DELETE FROM Payment p WHERE p.student.id = :studentId")

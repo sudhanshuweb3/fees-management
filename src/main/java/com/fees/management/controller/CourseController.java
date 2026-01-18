@@ -3,8 +3,10 @@ package com.fees.management.controller;
 import com.fees.management.dto.CourseRequestDto;
 import com.fees.management.dto.CourseResponseDto;
 import com.fees.management.entity.Course;
+import com.fees.management.entity.User;
 import com.fees.management.service.CourseService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,19 +22,24 @@ public class CourseController {
     }
 
     @PostMapping
-    public CourseResponseDto createCourse(@Valid @RequestBody CourseRequestDto course) {
-        return courseService.saveCourse(course);
+    public CourseResponseDto createCourse(@Valid @RequestBody CourseRequestDto course,
+                                          @AuthenticationPrincipal User user) {
+        Long schoolId = user.getSchool().getId();
+        return courseService.saveCourse(course, schoolId);
     }
 
     @GetMapping
-    public List<CourseResponseDto> getAllCourses() {
-        return courseService.getAllCourseDtos();
+    public List<CourseResponseDto> getAllCourses(@AuthenticationPrincipal User user) {
+        Long schoolId = user.getSchool().getId();
+        return courseService.getAllCourseDtos(schoolId);
     }
 
     @PutMapping("/{id}")
     public CourseResponseDto updateCourse(@PathVariable Long id,
-                                          @RequestBody CourseRequestDto dto) {
-        return courseService.updateCourse(id, dto);
+                                          @RequestBody CourseRequestDto dto,
+                                          @AuthenticationPrincipal User user) {
+        Long schoolId = user.getSchool().getId();
+        return courseService.updateCourse(id, dto, schoolId);
     }
 
 }

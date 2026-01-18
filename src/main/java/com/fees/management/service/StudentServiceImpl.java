@@ -8,8 +8,10 @@ import com.fees.management.entity.Payment;
 import com.fees.management.entity.Student;
 import com.fees.management.exception.ResourceNotFoundException;
 import com.fees.management.mapper.StudentMapper;
+import com.fees.management.entity.School;
 import com.fees.management.repository.CourseRepository;
 import com.fees.management.repository.PaymentRepository;
+import com.fees.management.repository.SchoolRepository;
 import com.fees.management.repository.StudentRepository;
 import com.fees.management.service.StudentService;
 import org.springframework.stereotype.Service;
@@ -28,19 +30,25 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final PaymentRepository paymentRepository;
+    private final SchoolRepository schoolRepository;
 
     public StudentServiceImpl(StudentRepository studentRepository,
                               CourseRepository courseRepository,
-                              PaymentRepository paymentRepository) {
+                              PaymentRepository paymentRepository,
+                              SchoolRepository schoolRepository) {
         this.studentRepository = studentRepository;
         this.courseRepository = courseRepository;
         this.paymentRepository = paymentRepository;
+        this.schoolRepository = schoolRepository;
     }
 
     @Override
-    public StudentResponseDto createStudent(StudentRequestDto request) {
+    public StudentResponseDto createStudent(StudentRequestDto request, Long schoolId) {
 
-        log.info("Creating student with email: {}", request.getEmail());
+        log.info("Creating student with email: {} for school: {}", request.getEmail(), schoolId);
+
+        School school = schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> {
@@ -53,6 +61,7 @@ public class StudentServiceImpl implements StudentService {
         student.setEmail(request.getEmail());
         student.setPhone(request.getPhone());
         student.setCourse(course);
+        student.setSchool(school);
 
         Student saved = studentRepository.save(student);
 
@@ -63,17 +72,17 @@ public class StudentServiceImpl implements StudentService {
 
 
     @Override
-    public List<StudentResponseDto> getAllStudents() {
-        return studentRepository.findAll()
+    public List<StudentResponseDto> getAllStudents(Long schoolId) {
+        return studentRepository.findBySchoolId(schoolId)
                 .stream()
                 .map(StudentMapper::toDto)
                 .toList();
     }
 
     @Override
-    public StudentResponseDto getStudentById(Long id) {
+    public StudentResponseDto getStudentById(Long id, Long schoolId) {
 
-        log.info("Fetching student with id: {}", id);
+        log.info("Fetching student with id: {} for school: {}", id, schoolId);
 
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> {
@@ -81,30 +90,40 @@ public class StudentServiceImpl implements StudentService {
                     return new ResourceNotFoundException("Student not found");
                 });
 
+        // Verify student belongs to the school
+        if (!student.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Student not found in this school");
+        }
+
         return StudentMapper.toDto(student);
     }
 
 
     @Override
-    public void deleteStudent(Long id) {
+    public void deleteStudent(Long id, Long schoolId) {
 
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
 
+        // Verify student belongs to the school
+        if (!student.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Student not found in this school");
+        }
+
         // delete all payments of this student first
         paymentRepository.deleteByStudentId(id);
 
-        // tthen delete student
+        // then delete student
         studentRepository.delete(student);
 
-        System.out.println("Student deleted successfully: " + id);
+        log.info("Student deleted successfully: {}", id);
     }
 
 
     @Override
-    public FeeSummaryResponse getFeeSummary(Long studentId) {
+    public FeeSummaryResponse getFeeSummary(Long studentId, Long schoolId) {
 
-        log.info("Fetching fee summary for student: {}", studentId);
+        log.info("Fetching fee summary for student: {} in school: {}", studentId, schoolId);
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> {
@@ -112,9 +131,14 @@ public class StudentServiceImpl implements StudentService {
                     return new ResourceNotFoundException("Student not found");
                 });
 
+        // Verify student belongs to the school
+        if (!student.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Student not found in this school");
+        }
+
         double totalFee = student.getCourse().getTotalFee();
 
-        List<Payment> payments = paymentRepository.findByStudentId(studentId);
+        List<Payment> payments = paymentRepository.findByStudentIdAndSchoolId(studentId, schoolId);
         double paid = payments.stream().mapToDouble(Payment::getAmount).sum();
 
         double remaining = totalFee - paid;
@@ -131,10 +155,15 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponseDto updateStudent(Long id, StudentRequestDto request) {
+    public StudentResponseDto updateStudent(Long id, StudentRequestDto request, Long schoolId) {
 
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        // Verify student belongs to the school
+        if (!student.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Student not found in this school");
+        }
 
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));

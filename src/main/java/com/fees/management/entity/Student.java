@@ -27,6 +27,10 @@ public class Student {
     //@JsonIgnoreProperties("students") // prevents infinite loop
     private Course course;
 
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
+
     @OneToMany(mappedBy = "student")
     private List<Payment> payments;
 
@@ -78,5 +82,13 @@ public class Student {
 
     public void setPayments(List<Payment> payments) {
         this.payments = payments;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
     }
 }

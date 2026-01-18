@@ -8,16 +8,16 @@ import java.util.List;
 
 public interface StudentService {
 
-    StudentResponseDto createStudent(StudentRequestDto request);
+    StudentResponseDto createStudent(StudentRequestDto request, Long schoolId);
 
-    List<StudentResponseDto> getAllStudents();
+    List<StudentResponseDto> getAllStudents(Long schoolId);
 
-    StudentResponseDto getStudentById(Long id);
+    StudentResponseDto getStudentById(Long id, Long schoolId);
 
-    void deleteStudent(Long id);
+    void deleteStudent(Long id, Long schoolId);
 
-    FeeSummaryResponse getFeeSummary(Long studentId);
+    FeeSummaryResponse getFeeSummary(Long studentId, Long schoolId);
 
-    StudentResponseDto updateStudent(Long id, StudentRequestDto request);
+    StudentResponseDto updateStudent(Long id, StudentRequestDto request, Long schoolId);
 
 }

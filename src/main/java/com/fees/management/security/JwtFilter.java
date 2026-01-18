@@ -34,8 +34,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Allow auth endpoints
-        if (path.startsWith("/auth")) {
+        // Allow auth, h2-console, and swagger endpoints without authentication
+        if (path.startsWith("/auth") || 
+            path.startsWith("/h2-console") || 
+            path.startsWith("/swagger-ui") || 
+            path.startsWith("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -57,10 +60,13 @@ public class JwtFilter extends OncePerRequestFilter {
             User user = userRepository.findByEmail(email)
                     .orElseThrow();
 
-            // Block non-admin delete
-            if ("DELETE".equals(request.getMethod()) && !"ADMIN".equals(role)) {
+            // Role-based access control
+            // SUPER_ADMIN can access everything
+            // SCHOOL_ADMIN can manage their school
+            // STUDENT has limited access
+            if ("DELETE".equals(request.getMethod()) && "STUDENT".equals(role)) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                response.getWriter().write("Admin only");
+                response.getWriter().write("Students cannot delete resources");
                 return;
             }
 

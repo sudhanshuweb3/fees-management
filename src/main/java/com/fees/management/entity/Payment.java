@@ -34,6 +34,10 @@ public class Payment {
     //@JsonIgnoreProperties("payments") // prevents infinite loop
     private Student student;
 
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
+
     // ===== Getters =====
     public Long getId() {
         return id;
@@ -74,5 +78,13 @@ public class Payment {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
     }
 }

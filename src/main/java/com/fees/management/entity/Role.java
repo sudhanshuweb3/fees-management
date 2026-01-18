@@ -1,5 +1,7 @@
 package com.fees.management.entity;
+
 public enum Role {
-    USER,
-    ADMIN
+    SUPER_ADMIN,
+    SCHOOL_ADMIN,
+    STUDENT
 }

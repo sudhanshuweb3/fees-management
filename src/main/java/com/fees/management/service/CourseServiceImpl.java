@@ -4,8 +4,11 @@ package com.fees.management.service;
 import com.fees.management.dto.CourseRequestDto;
 import com.fees.management.dto.CourseResponseDto;
 import com.fees.management.entity.Course;
+import com.fees.management.entity.School;
+import com.fees.management.exception.ResourceNotFoundException;
 import com.fees.management.mapper.CourseMapper;
 import com.fees.management.repository.CourseRepository;
+import com.fees.management.repository.SchoolRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,19 +23,25 @@ public class CourseServiceImpl implements CourseService {
 
 
     private final CourseRepository courseRepository;
+    private final SchoolRepository schoolRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, SchoolRepository schoolRepository) {
         this.courseRepository = courseRepository;
+        this.schoolRepository = schoolRepository;
     }
 
     @Override
-    public CourseResponseDto saveCourse(CourseRequestDto dto) {
+    public CourseResponseDto saveCourse(CourseRequestDto dto, Long schoolId) {
 
-        log.info("Creating course: {}", dto.getName());
+        log.info("Creating course: {} for school: {}", dto.getName(), schoolId);
+
+        School school = schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 
         Course course = new Course();
         course.setName(dto.getName());
         course.setTotalFee(dto.getTotalFee());
+        course.setSchool(school);
 
         Course saved = courseRepository.save(course);
 
@@ -43,19 +52,25 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+    public List<Course> getAllCourses(Long schoolId) {
+        return courseRepository.findBySchoolId(schoolId);
     }
 
     @Override
-    public Course getCourseById(Long id) {
-        return courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+    public Course getCourseById(Long id, Long schoolId) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        
+        if (!course.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Course not found in this school");
+        }
+        
+        return course;
     }
 
     @Override
-    public List<CourseResponseDto> getAllCourseDtos() {
-        return courseRepository.findAll()
+    public List<CourseResponseDto> getAllCourseDtos(Long schoolId) {
+        return courseRepository.findBySchoolId(schoolId)
                 .stream()
                 .map(CourseMapper::toDto)
                 .toList();
@@ -72,10 +87,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseResponseDto updateCourse(Long id, CourseRequestDto dto) {
+    public CourseResponseDto updateCourse(Long id, CourseRequestDto dto, Long schoolId) {
 
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+        if (!course.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Course not found in this school");
+        }
 
         course.setName(dto.getName());
         course.setTotalFee(dto.getTotalFee());

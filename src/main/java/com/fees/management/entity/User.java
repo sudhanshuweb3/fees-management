@@ -22,6 +22,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
+
     // getters setters
     public Long getId() { return id; }
     public String getName() { return name; }
@@ -34,4 +38,7 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
     public void setRole(Role role) { this.role = role; }
+    public void setSchool(School school) { this.school = school; }
+    
+    public School getSchool() { return school; }
 }

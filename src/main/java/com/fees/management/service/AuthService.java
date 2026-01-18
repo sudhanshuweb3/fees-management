@@ -30,7 +30,7 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
-        user.setRole(Role.USER);
+        user.setRole(Role.STUDENT);
 
         userRepository.save(user);
 
@@ -46,7 +46,8 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        return JwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        Long schoolId = user.getSchool() != null ? user.getSchool().getId() : null;
+        return JwtUtil.generateToken(user.getEmail(), user.getRole().name(), schoolId);
     }
 
 }
